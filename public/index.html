@@ -1,410 +1,283 @@
 <!DOCTYPE html>
 <html lang="de">
-  <head>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-    <title>qemu-control</title>
-    
-    <link href="/vendor/css/bootstrap-3-0-0.css" rel="stylesheet">
-    <link href="/vendor/css/type.css" rel="stylesheet">
+<head>
+	<meta content="text/html; charset=UTF-8" http-equiv="Content-Type" />
+	<title>qemu-control</title>
+	<link href="home/chronos/u-b985b120b673cd8edc6b1baaca5b3bc70e6e56af/Downloads/node-qemu-server-master/public//vendor/css/bootstrap-3-0-0.css" rel="stylesheet" />
+	<link href="home/chronos/u-b985b120b673cd8edc6b1baaca5b3bc70e6e56af/Downloads/node-qemu-server-master/public//vendor/css/type.css" rel="stylesheet" /><script type="text/javascript" rel="anonymous" src="home/chronos/u-b985b120b673cd8edc6b1baaca5b3bc70e6e56af/Downloads/node-qemu-server-master/public//vendor/jsLibs/jquery-2-0-3.js"></script><script type="text/javascript" rel="anonymous" src="home/chronos/u-b985b120b673cd8edc6b1baaca5b3bc70e6e56af/Downloads/node-qemu-server-master/public//vendor/jsLibs/typeahead-0-9-3.js"></script><script type="text/javascript" rel="anonymous" src="home/chronos/u-b985b120b673cd8edc6b1baaca5b3bc70e6e56af/Downloads/node-qemu-server-master/public//vendor/jsLibs/socket.io.js"></script><script type="text/javascript" rel="anonymous" src="home/chronos/u-b985b120b673cd8edc6b1baaca5b3bc70e6e56af/Downloads/node-qemu-server-master/public//vendor/jsLibs/knockout-2-3-0.js"></script><script type="text/javascript" rel="anonymous" src="home/chronos/u-b985b120b673cd8edc6b1baaca5b3bc70e6e56af/Downloads/node-qemu-server-master/public//vendor/jsLibs/bootstrap-tab.js"></script><script type="text/javascript" rel="anonymous" src="home/chronos/u-b985b120b673cd8edc6b1baaca5b3bc70e6e56af/Downloads/node-qemu-server-master/public//vendor/jsLibs/jquery-plugin-notification.js"></script><script type="text/javascript" rel="anonymous" src="home/chronos/u-b985b120b673cd8edc6b1baaca5b3bc70e6e56af/Downloads/node-qemu-server-master/public//vendor/jsLibs/jquery-plugin-uploader2.js"></script><script type="text/javascript" rel="anonymous" src="home/chronos/u-b985b120b673cd8edc6b1baaca5b3bc70e6e56af/Downloads/node-qemu-server-master/public//js/classes.js"></script><script type="text/javascript" rel="anonymous" src="home/chronos/u-b985b120b673cd8edc6b1baaca5b3bc70e6e56af/Downloads/node-qemu-server-master/public//js/js.js"></script>
+</head>
+<body style="margin: 10px 10px 0px 10px">
+<div class="tabbable">
+<ul class="nav nav-tabs">
+	<li><a data-toggle="tab" href="#listHostTab">Host</a></li>
+	<li class="active"><a data-toggle="tab" href="#listVMsTab">Guests</a></li>
+	<li>&nbsp;</li>
+	<li><a data-toggle="tab" href="#listIsosTab">Manage ISOs</a></li>
+	<li><a data-toggle="tab" href="#createVMTab">Guest creation</a></li>
+</ul>
 
-    <script type="text/javascript" rel="anonymous" src="/vendor/jsLibs/jquery-2-0-3.js"></script>
-    <script type="text/javascript" rel="anonymous" src="/vendor/jsLibs/typeahead-0-9-3.js"></script>
-    <script type="text/javascript" rel="anonymous" src="/vendor/jsLibs/socket.io.js"></script>
-    <script type="text/javascript" rel="anonymous" src="/vendor/jsLibs/knockout-2-3-0.js"></script>
-    <script type="text/javascript" rel="anonymous" src="/vendor/jsLibs/bootstrap-tab.js"></script>
-    <script type="text/javascript" rel="anonymous" src="/vendor/jsLibs/jquery-plugin-notification.js"></script>
-    <script type="text/javascript" rel="anonymous" src="/vendor/jsLibs/jquery-plugin-uploader2.js"></script>
-    <script type="text/javascript" rel="anonymous" src="/js/classes.js"></script>
-    <script type="text/javascript" rel="anonymous" src="/js/js.js"></script>
-  </head>
+<div class="tab-content"><!-- HOST TAB -->
+<div class="tab-pane" id="listHostTab">
+<table class="table table-striped">
+	<thead>
+		<tr>
+			<th>hostname</th>
+			<th>CPUs</th>
+			<th>RAM</th>
+			<th>free RAM</th>
+			<th>load now</th>
+			<th>load 5min ago</th>
+			<th>load 15min ago</th>
+		</tr>
+	</thead>
+	<tbody id="hostTable">
+		<tr>
+			<td data-bind="text: host().hostname">&nbsp;</td>
+			<td data-bind="text: host().cpus">&nbsp;</td>
+			<td data-bind="text: host().ram">&nbsp;</td>
+			<td data-bind="text: host().freeRam">&nbsp;</td>
+			<th data-bind="text: host().l[0]">&nbsp;</th>
+			<th data-bind="text: host().l[1]">&nbsp;</th>
+			<th data-bind="text: host().l[2]">&nbsp;</th>
+		</tr>
+	</tbody>
+</table>
+</div>
+<!-- #listHostTab --><!-- LIST GUESTS TAB -->
 
-  <body style="margin: 10px 10px 0px 10px">
-    <div class="tabbable">
+<div class="tab-pane active" id="listVMsTab">
+<table class="table table-striped">
+	<thead>
+		<tr>
+			<th>Name</th>
+			<th>Status</th>
+			<th>CPUs</th>
+			<th>RAM</th>
+			<th>VGA</th>
+			<th>VNC</th>
+			<th>Disk</th>
+			<th>ISO</th>
+			<th>Actions</th>
+			<th>Delete</th>
+		</tr>
+	</thead>
+	<tbody data-bind="foreach: vms" id="vmList">
+		<tr>
+			<td data-bind="text: name">&nbsp;</td>
+			<td data-bind="click: $parent.expandStatus" style="cursor:pointer;">
+			<div class="alert" data-bind="text: status, css: { 'alert-danger': status() == 'stopped', 'alert-success' : status() == 'running', 'alert-warning' : status() == 'paused'}" style="margin-bottom:0px; padding:0px; text-align:center;">&nbsp;</div>
+			</td>
+			<td data-bind="text: hardware.cpus">&nbsp;</td>
+			<td data-bind="text: hardware.ram + 'MB'">&nbsp;</td>
+			<td data-bind="text: hardware.vgaCard">&nbsp;</td>
+			<td data-bind="text: ':'+settings.vnc">&nbsp;</td>
+			<td data-bind="text: false != hardware.disk ? hardware.disk : hardware.partition ">&nbsp;</td>
+			<td data-bind="text: hardware.iso == false ? 'none' : hardware.iso, click: $parent.expandIso" style="cursor:pointer;" td="">&nbsp;</td>
+			<td><button class="btn btn-default btn-sm" data-bind="click: $root.edit, visible: status() == 'stopped'"></button></td>
+			<td><button class="btn btn-default btn-sm" data-bind="click: $root.remove, visible: status() == 'stopped'"></button></td>
+		</tr>
+		<tr data-bind="visible: expandedStatus">
+			<td>&nbsp;</td>
+			<td colspan="9"><button class="btn btn-default btn-sm" data-bind="click: $root.start, visible: status() == 'stopped' "></button><button class="btn btn-default btn-sm" data-bind="click: $root.pause, visible: status() != 'stopped' &amp;&amp; status() != 'paused'"></button><button class="btn btn-default btn-sm" data-bind="click: $root.resume, visible: status() != 'stopped' &amp;&amp; status() != 'running'"></button><button class="btn btn-default btn-sm" data-bind="click: $root.stop, visible: status() != 'stopped'"></button><button class="btn btn-default btn-sm" data-bind="click: $root.reset, visible: status() != 'stopped'"></button></td>
+		</tr>
+		<tr data-bind="visible: expandedIso() &amp;&amp; hardware.iso != false">
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+			<td colspan="3">Eject ISO</td>
+		</tr>
+	</tbody>
+</table>
+</div>
+<!-- CREATE / LIST DISKS TAB -->
 
-      <ul class="nav nav-tabs">
-        <li>               <a href="#listHostTab"   data-toggle="tab">Host</a></li>
-        <li class="active"><a href="#listVMsTab"    data-toggle="tab">Guests</a></li>
-        <li>               <a href="#listDisksTab"  data-toggle="tab"><span class="glyphicon glyphicon-hdd" /></a></li>
-        <li>               <a href="#listIsosTab"   data-toggle="tab">Manage ISOs</a></li>
-        <li>               <a href="#createVMTab"   data-toggle="tab">Guest creation</a></li>
-      </ul>
+<div class="tab-pane" id="listDisksTab">
+<h3>Create a disk</h3>
 
-      <div class="tab-content">
+<form class="form-inline" id="formDiskCreate" role="form">
+<div class="form-group"><input class="form-control" id="diskName" placeholder="disk name" style="width:300px;" type="text" /></div>
 
-        <!-- HOST TAB -->
-        <div class="tab-pane" id="listHostTab">
-          <table class="table table-striped">
-            <thead>
-              <tr>
-                <th>hostname</th>
-                <th>CPUs</th>
-                <th>RAM</th>
-                <th>free RAM</th>
-                <th>load now</th>
-                <th>load 5min ago</th>
-                <th>load 15min ago</th>
-              </tr>
-            </thead>
-            <tbody id="hostTable">
-              <tr>
-                <td data-bind="text: host().hostname"></td>
-                <td data-bind="text: host().cpus"></td>
-                <td data-bind="text: host().ram"></td>
-                <td data-bind="text: host().freeRam"></td>
-                <th data-bind="text: host().l[0]"></th>
-                <th data-bind="text: host().l[1]"></th>
-                <th data-bind="text: host().l[2]"></th>
-              </tr>
-            </tbody>
-          </table>
-        </div> <!-- #listHostTab -->
+<div class="form-group"><input class="form-control" id="diskSize" placeholder="Size in Gibibyte" type="number" /></div>
+<button class="btn btn-primary" id="createDisk" type="button"></button></form>
 
-        <!-- LIST GUESTS TAB -->
-        <div class="tab-pane active" id="listVMsTab">
-          <table class="table table-striped">
-            <thead>
-              <tr>
-                <th>Name</th>
-                <th>Status</th>
-                <th>CPUs</th>
-                <th>RAM</th>
-                <th>VGA</th>
-                <th>VNC</th>
-                <th>Disk</th>
-                <th>ISO</th>
-                <th>Actions</th>
-                <th>Delete</th>
-              </tr>
-            </thead>
-            <tbody data-bind="foreach: vms" id="vmList">
-              <tr>
-                <td data-bind="text: name"></td>
-                <td style="cursor:pointer;" data-bind="click: $parent.expandStatus" >
-                  <div style="margin-bottom:0px; padding:0px; text-align:center;" class="alert" data-bind="text: status, css: { 'alert-danger': status() == 'stopped', 'alert-success' : status() == 'running', 'alert-warning' : status() == 'paused'}"></div>
-                </td>
-                <td data-bind="text: hardware.cpus"></td>
-                <td data-bind="text: hardware.ram + 'MB'"></td>
-                <td data-bind="text: hardware.vgaCard"></td>
-                <td data-bind="text: ':'+settings.vnc"></td>
-                <td data-bind="text: false != hardware.disk ? hardware.disk : hardware.partition "></td>
-                <td style="cursor:pointer;" data-bind="text: hardware.iso == false ? 'none' : hardware.iso, click: $parent.expandIso"</td>
-                <td>
+<h3>list of disks</h3>
 
+<table class="table table-striped">
+	<thead>
+		<tr>
+			<th>Name</th>
+			<th>Diskspace.</th>
+			<th>Delete</th>
+		</tr>
+	</thead>
+	<tbody data-bind="foreach: images" id="imagesList">
+		<tr>
+			<td data-bind="text: name">&nbsp;</td>
+			<td>
+			<div class="progress">
+			<div class="progress-bar" data-bind="style: {width: percentUsed}">&nbsp;</div>
+			</div>
+			</td>
+			<td><button class="btn btn-default btn-sm" data-bind="click: $root.remove"></button></td>
+		</tr>
+	</tbody>
+</table>
+</div>
+<!--- ISO TAB -->
 
-                  <button data-bind="click: $root.edit, visible: status() == 'stopped'" class="btn btn-default btn-sm"><span class="glyphicon glyphicon-cog" /></button>
-                </td>
-                <td><button data-bind="click: $root.remove, visible: status() == 'stopped'" class="btn btn-default btn-sm"><span class="glyphicon glyphicon-trash" /></button></td>
-              </tr>
+<div class="tab-pane" id="listIsosTab" style="margin-left:20px;">
+<h3>list of ISOs</h3>
 
-              <tr data-bind="visible: expandedStatus">
-                <td>
-                </td>
-                <td colspan="9">
-                  <button data-bind="click: $root.start, visible: status() == 'stopped' "  class="btn btn-default btn-sm"><span class="glyphicon glyphicon-off" /></button>
-                  <button data-bind="click: $root.pause, visible: status() != 'stopped' && status() != 'paused'" class="btn btn-default btn-sm"><span class="glyphicon glyphicon-pause" /></button>
-                  <button data-bind="click: $root.resume, visible: status() != 'stopped' && status() != 'running'" class="btn btn-default btn-sm"><span class="glyphicon glyphicon-play" /></button>
-                  <button data-bind="click: $root.stop, visible: status() != 'stopped'" class="btn btn-default btn-sm"><span class="glyphicon glyphicon-stop" /></button>
-                  <button data-bind="click: $root.reset, visible: status() != 'stopped'" class="btn btn-default btn-sm"><span class="glyphicon glyphicon-repeat" /></button>
-                </td>
-              </tr>
-              <tr data-bind="visible: expandedIso() && hardware.iso != false">
-                <td></td> <td></td> <td></td> <td></td> <td></td> <td></td> <td></td>
+<div class="well well-small" id="uploadArea" style="margin-bottom:0px;">
+<center>Drag and drop your ISO files here to upload them.</center>
+</div>
 
-                <td colspan="3">
-                  Eject ISO
-                </td>
-              </tr>
-            </tbody>
-          </table>
+<div class="progress" id="isoUploadProgressBar">
+<div class="progress-bar">&nbsp;</div>
+</div>
 
-        </div>
-        
-        <!-- CREATE / LIST DISKS TAB -->        
-        <div class="tab-pane" id="listDisksTab">
-          <h3>Create a disk</h3>
+<h3>list of disks</h3>
 
-          <form class="form-inline" id="formDiskCreate" role="form">
-            <div class="form-group">
-              <input type="text" class="form-control" id="diskName" placeholder="disk name" style="width:300px;">
-            </div>
+<table class="table table-striped">
+	<thead>
+		<tr>
+			<th>Name</th>
+			<th>Size (GiByte)</th>
+			<th>Delete</th>
+		</tr>
+	</thead>
+	<tbody data-bind="foreach: isos" id="isosList">
+		<tr>
+			<td data-bind="text: name">&nbsp;</td>
+			<td data-bind="text: size">&nbsp;</td>
+			<td><button class="btn btn-default btn-sm" data-bind="click: $root.remove"></button></td>
+		</tr>
+	</tbody>
+</table>
+</div>
+<!-- listIsoTab --><!-- GUEST CREATION TAB -->
 
-            <div class="form-group">
-              <input type="number" class="form-control" id="diskSize" placeholder="Size in Gibibyte">
-            </div>
-            <button type="button" id="createDisk" class="btn btn-primary"><span class="glyphicon glyphicon-plus" /></button>
-          </form>
+<div class="tab-pane" id="createVMTab">
+<div class="row-fluid">
+<div class="span10" style="margin-left:20px;margin-top:10px;">
+<div class="row">
+<form class="form-horizontal" id="formVMcreate" role="form">
+<div class="col-md-6">
+<div class="form-group"><label class="col-md-2 control-label" for="vmName">Guest name</label>
 
-          <h3>list of disks</h3>
-          <table class="table table-striped">
-            <thead>
-              <tr>
-                <th>Name</th>
-                <th>Diskspace.</th>
-                <th>Delete</th>
-              </tr>
-            </thead>
-            <tbody data-bind="foreach: images" id="imagesList">
-              <tr>
-                <td data-bind="text: name"></td>
-                <td>
-                  <div class="progress">              
-                    <div class="progress-bar" data-bind="style: {width: percentUsed}" ></div>
-                  </div>
-<span data-bind="text: used()+'GiB of '+size()+'GiB used, left '+left()+'GiB'"></span>
-                </td>                
-                <td><button data-bind="click: $root.remove" class="btn btn-default btn-sm"><span class="glyphicon glyphicon-trash" /></button></td>
-              </tr>
-            </tbody>
-          </table>
-        </div>          
+<div class="col-md-8"><input class="form-control" data-bind="value: vmName" id="vmName" type="text" /> <span class="help-block">Provide a name for the Guest.</span></div>
+</div>
 
-        <!--- ISO TAB -->
-        <div class="tab-pane" id="listIsosTab" style="margin-left:20px;">
-          <h3>list of ISOs</h3>
-          
-          <div style="margin-bottom:0px;" class="well well-small" id="uploadArea"><center><span class="glyphicon glyphicon-cloud-upload"></span> Drag and drop your ISO files here to upload them.</center>
-          </div>
-          <div class="progress" id="isoUploadProgressBar">              
-            <div class="progress-bar"></div>
-          </div>
-          
-          <h3>list of disks</h3>
-          
-          <table class="table table-striped">
-            <thead>
-              <tr>
-                <th>Name</th>
-                <th>Size (GiByte)</th>
-                <th>Delete</th>
-              </tr>
-            </thead>
-            <tbody data-bind="foreach: isos" id="isosList">
-              <tr>
-                <td data-bind="text: name"></td>
-                <td data-bind="text: size"></td>
-                <td><button data-bind="click: $root.remove" class="btn btn-default btn-sm"><span class="glyphicon glyphicon-trash" /></button></td>
-              </tr>
-            </tbody>
-          </table>
-        </div> <!-- listIsoTab -->
-        
-        <!-- GUEST CREATION TAB -->
-        <div class="tab-pane" id="createVMTab">
-          <div class="row-fluid">
-            <div class="span10" style="margin-left:20px;margin-top:10px;">
-              <div class="row">
-                <form id="formVMcreate" class="form-horizontal" role="form">
+<div class="form-group"><label class="col-md-2 control-label" for="netCard">disk or partition</label>
 
-                <div class="col-md-6">
+<div class="col-md-8">
+<div class="radio"><label><input data-bind="checked: diskOrPartition" name="diskOrPartition" type="radio" value="disk" /> Disk </label></div>
 
-                  <div class="form-group">
-                    <label for="vmName" class="col-md-2 control-label">Guest name</label>
-                    <div class="col-md-8">
-                      <input data-bind="value: vmName" type="text" id="vmName" class="form-control">
-                      <span class="help-block">Provide a name for the Guest.</span>
-                    </div>
-                  </div>
-                  
-                  <div class="form-group">
-                    <label for="netCard"  class="col-md-2 control-label">disk or partition</label>
-                    <div class="col-md-8">
-                      <div class="radio">
-                        <label>
-                          <input type="radio" name="diskOrPartition" value="disk" data-bind="checked: diskOrPartition" />
-                          Disk
-                        </label>
-                      </div>
+<div class="radio"><label><input data-bind="checked: diskOrPartition" name="diskOrPartition" type="radio" value="partition" /> Partition </label></div>
+</div>
+</div>
 
-                      <div class="radio">
-                        <label>
-                          <input type="radio" name="diskOrPartition" value="partition" data-bind="checked: diskOrPartition" />
-                          Partition
-                        </label>
-                      </div>
-                    </div>
-                  </div>
-                  
-                  <div class="form-group" data-bind="visible: diskOrPartition() == 'disk'">
-                    <label for="diskName" class="col-md-2 control-label">disk</label>
-                    <div class="col-md-8">
-                      <select data-bind="options: disks, value: disk" class="form-control" id="diskName"></select> 
-                      <span class="help-block">Select a disk</span>
-                    </div>
-                  </div>
-  
-                  <div class="form-group" data-bind="visible: diskOrPartition() == 'partition'">
-                    <label for="partition" class="col-md-2 control-label">partition</label>
-                    <div class="col-md-8">
-                      <input data-bind="value: partition" type="text" id="partition" class="form-control">
-                      <span class="help-block">Write the complete partition path.</span>
-                    </div>
-                  </div>
-                  
-                  <div class="form-group">
-                    <label for="vmIso" class="col-md-2 control-label">iso image</label>
-                    <div class="col-md-8">
-                      <select data-bind="options: isos, value: selectedIso" class="form-control" id="vmIso"></select> 
-                      <span class="help-block">Select a iso image</span>
-                    </div>
-                  </div>
+<div class="form-group" data-bind="visible: diskOrPartition() == 'disk'"><label class="col-md-2 control-label" for="diskName">disk</label>
 
-                  <div class="form-group">
-                    <div class="col-md-offset-2 col-md-8">
-                      <label>
-                        <input type="checkbox" data-bind="checked: enableVGACard">
-                        Enable VGA support
-                      </label>
-                      <span class="help-block">linux does not need grafics, windows vga or qxl</span>
-                    </div>
-                  </div>
-                  
-                  <div class="form-group" data-bind="visible: enableVGACard()">
-                    <label for="vga" class="col-md-2 control-label">vga card</label>
-                    <div class="col-md-8">
-                      <select data-bind="options: vgaCards, value: vgaCard" class="form-control" id="vga"></select> 
-                      <span class="help-block">vga cards are none, standard (std) and paravirtual qxl</span>
-                    </div>
-                  </div>
-                  
-                  <div class="form-group">
-                    <label for="bootDevice"  class="col-md-2 control-label">select boot device</label>
-                    <div class="col-md-8">
-                      <select data-bind="options: bootDevices, value: bootDevice" class="form-control" id="bootDevice"></select> 
-                      <span class="help-block">Select your boot device. boot from iso or disk.</span>
-                    </div>
-                  </div>
-                  
-                  <div class="form-group">
-                    <div class="col-md-offset-2 col-md-8">
-                      <label>
-                        <input type="checkbox" data-bind="checked: bootVM">
-                        boot VM after creation
-                      </label>
-                      <span class="help-block">instantly boot VM after creation</span>
-                    </div>
-                  </div>
-                  
-                  <div class="form-group">
-                    <div class="col-md-offset-2 col-md-8">
-                      <button data-bind="click: create, enable: checkCreate()" class="btn btn-primary">create</button>
-                      <span class="help-block">Create the VM with selected settings.</span>
-                    </div>
-                  </div>
+<div class="col-md-8"><select class="form-control" data-bind="options: disks, value: disk" id="diskName"></select> <span class="help-block">Select a disk</span></div>
+</div>
 
-                </div> <!-- col-md-6 -->
-                <div class="col-md-6">
-                  
-                  <div class="form-group">
-                    <label for="vmCpus" class="col-md-2 control-label">CPU count</label>
-                    <div class="col-md-8">
-                      <select data-bind="options: cpus, optionsText:'cpu', value: cpuCount" class="form-control" id="vmCpus"></select> 
-                      <span class="help-block">number of cpus</span>
-                    </div>
-                  </div>
-                  
-                  <div class="form-group">
-                    <div class="col-md-offset-2 col-md-8">
-                      <label>
-                        <input type="checkbox" data-bind="checked: enableCpuModel">
-                        CPU model
-                      </label>
-                      <span class="help-block">enable cpu model selection</span>
-                    </div>
-                  </div>
-                  
-                  <div class="form-group" data-bind="visible: enableCpuModel()">
-                    <label for="vmName" class="col-md-2 control-label">CPU model</label>
-                    <div class="col-md-8">
-                      <input id="cpuModelName" type="text" id="vmName" class="form-control">
-                      <span class="help-block">type your cpu model.</span>
-                    </div>
-                  </div>
+<div class="form-group" data-bind="visible: diskOrPartition() == 'partition'"><label class="col-md-2 control-label" for="partition">partition</label>
 
-                  <div class="form-group">
-                    <label for="vmRam" class="col-md-2 control-label">RAM size</label>
-                    <div class="col-md-8">
-                      <select data-bind="options: memory, optionsText:'mem', value: selectedMemory" class="form-control" id="vmRam"></select> 
-                      <span class="help-block">maximal size of RAM</span>
-                    </div>
-                  </div>
-                
-                  <div class="form-group">
-                    <label for="keybLayout" class="col-md-2 control-label">Keyboard layout</label>
-                    <div class="col-md-8">
-                      <select data-bind="options: keyboards, value: keyboard" class="form-control" id="keybLayout"></select> 
-                      <span class="help-block">Select your keyboard layout</span>
-                    </div>
-                  </div>
-                  
-                  <div class="form-group">
-                    <div class="col-md-offset-2 col-md-8">
-                      <label>
-                        <input type="checkbox" data-bind="checked: enableVNC">
-                        enable VNC
-                      </label>
-                      <span class="help-block">Connect to the VM via VNC</span>
-                    </div>
-                  </div>
-                  
-                  <div class="form-group">
-                    <div class="col-md-offset-2 col-md-8">
-                      <label>
-                        <input type="checkbox" data-bind="checked: enableSpice">
-                        enable SPICE
-                      </label>
-                      <span class="help-block">Connect to the VM via SPICE</span>
-                    </div>
-                  </div>
-                  
-                  <div class="form-group">
-                    <div class="col-md-offset-2 col-md-8">
-                      <label>
-                        <input type="checkbox" data-bind="checked: enableNet">
-                        enable networking
-                      </label>
-                      <span class="help-block">Enable Network Card</span>
-                    </div>
-                  </div>
-                  
-                  <div class="form-group" data-bind="visible: enableNet()">
-                    <label for="macAddress" class="col-md-2 control-label">mac address</label>
-                    <div class="col-md-8">
-                      <div class="input-group">
-                        <input data-bind="value: macAddr" type="text" id="macAddress" class="form-control">
-                        <span class="input-group-btn">
-                          <button data-bind="click: generateMacAddr" class="btn btn-primary">generate</button> 
-                        </span>
-                      </div>
-                      <span class="help-block">mac address, example 01:23:45:67:89:01</span>
-                    </div>
-                  </div>
-              
-                  <div class="form-group" data-bind="visible: enableNet()">
-                    <label for="netCard"  class="col-md-2 control-label">Networkcard controller</label>
-                    <div class="col-md-8">
-                      <select data-bind="options: netCards, value: netCard, enable: macAddr().length == 17 && enableNet()" class="form-control" id="netCard"></select> 
-                      <span class="help-block">Select the network card controller. For Windows without spice guest tools installed use the rtl8139 controller. After installed guest tools you can switch to the faster virtio controller.</span>
-                    </div>
-                  </div>
-                  
+<div class="col-md-8"><input class="form-control" data-bind="value: partition" id="partition" type="text" /> <span class="help-block">Write the complete partition path.</span></div>
+</div>
 
- 
-                  
-                  
-  
-                </div>
-              </form>
-              </div>
+<div class="form-group"><label class="col-md-2 control-label" for="vmIso">iso image</label>
 
-            </div>
-          </div>
-        </div>
+<div class="col-md-8"><select class="form-control" data-bind="options: isos, value: selectedIso" id="vmIso"></select> <span class="help-block">Select a iso image</span></div>
+</div>
 
-      </div>
-      
-    </div> <!-- .tabbable -->
-    
-    <a href="http://glyphicons.com" target="_blank">This uses glyphicons.</a>
+<div class="form-group">
+<div class="col-md-offset-2 col-md-8"><label><input data-bind="checked: enableVGACard" type="checkbox" /> Enable VGA support </label> <span class="help-block">linux does not need grafics, windows vga or qxl</span></div>
+</div>
 
-  </body>
+<div class="form-group" data-bind="visible: enableVGACard()"><label class="col-md-2 control-label" for="vga">vga card</label>
+
+<div class="col-md-8"><select class="form-control" data-bind="options: vgaCards, value: vgaCard" id="vga"></select> <span class="help-block">vga cards are none, standard (std) and paravirtual qxl</span></div>
+</div>
+
+<div class="form-group"><label class="col-md-2 control-label" for="bootDevice">select boot device</label>
+
+<div class="col-md-8"><select class="form-control" data-bind="options: bootDevices, value: bootDevice" id="bootDevice"></select> <span class="help-block">Select your boot device. boot from iso or disk.</span></div>
+</div>
+
+<div class="form-group">
+<div class="col-md-offset-2 col-md-8"><label><input data-bind="checked: bootVM" type="checkbox" /> boot VM after creation </label> <span class="help-block">instantly boot VM after creation</span></div>
+</div>
+
+<div class="form-group">
+<div class="col-md-offset-2 col-md-8"><button class="btn btn-primary" data-bind="click: create, enable: checkCreate()">create</button><span class="help-block">Create the VM with selected settings.</span></div>
+</div>
+</div>
+<!-- col-md-6 -->
+
+<div class="col-md-6">
+<div class="form-group"><label class="col-md-2 control-label" for="vmCpus">CPU count</label>
+
+<div class="col-md-8"><select class="form-control" data-bind="options: cpus, optionsText:'cpu', value: cpuCount" id="vmCpus"></select> <span class="help-block">number of cpus</span></div>
+</div>
+
+<div class="form-group">
+<div class="col-md-offset-2 col-md-8"><label><input data-bind="checked: enableCpuModel" type="checkbox" /> CPU model </label> <span class="help-block">enable cpu model selection</span></div>
+</div>
+
+<div class="form-group" data-bind="visible: enableCpuModel()"><label class="col-md-2 control-label" for="vmName">CPU model</label>
+
+<div class="col-md-8"><input class="form-control" id="cpuModelName" type="text" /> <span class="help-block">type your cpu model.</span></div>
+</div>
+
+<div class="form-group"><label class="col-md-2 control-label" for="vmRam">RAM size</label>
+
+<div class="col-md-8"><select class="form-control" data-bind="options: memory, optionsText:'mem', value: selectedMemory" id="vmRam"></select> <span class="help-block">maximal size of RAM</span></div>
+</div>
+
+<div class="form-group"><label class="col-md-2 control-label" for="keybLayout">Keyboard layout</label>
+
+<div class="col-md-8"><select class="form-control" data-bind="options: keyboards, value: keyboard" id="keybLayout"></select> <span class="help-block">Select your keyboard layout</span></div>
+</div>
+
+<div class="form-group">
+<div class="col-md-offset-2 col-md-8"><label><input data-bind="checked: enableVNC" type="checkbox" /> enable VNC </label> <span class="help-block">Connect to the VM via VNC</span></div>
+</div>
+
+<div class="form-group">
+<div class="col-md-offset-2 col-md-8"><label><input data-bind="checked: enableSpice" type="checkbox" /> enable SPICE </label> <span class="help-block">Connect to the VM via SPICE</span></div>
+</div>
+
+<div class="form-group">
+<div class="col-md-offset-2 col-md-8"><label><input data-bind="checked: enableNet" type="checkbox" /> enable networking </label> <span class="help-block">Enable Network Card</span></div>
+</div>
+
+<div class="form-group" data-bind="visible: enableNet()"><label class="col-md-2 control-label" for="macAddress">mac address</label>
+
+<div class="col-md-8">
+<div class="input-group"><input class="form-control" data-bind="value: macAddr" id="macAddress" type="text" /> <span class="input-group-btn"><button class="btn btn-primary" data-bind="click: generateMacAddr">generate</button> </span></div>
+<span class="help-block">mac address, example 01:23:45:67:89:01</span></div>
+</div>
+
+<div class="form-group" data-bind="visible: enableNet()"><label class="col-md-2 control-label" for="netCard">Networkcard controller</label>
+
+<div class="col-md-8"><select class="form-control" data-bind="options: netCards, value: netCard, enable: macAddr().length == 17 &amp;&amp; enableNet()" id="netCard"></select> <span class="help-block">Select the network card controller. For Windows without spice guest tools installed use the rtl8139 controller. After installed guest tools you can switch to the faster virtio controller.</span></div>
+</div>
+</div>
+</form>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- .tabbable -->
+
+<p><a href="http://glyphicons.com" target="_blank">This uses glyphicons.</a></p>
+</body>
 </html>
